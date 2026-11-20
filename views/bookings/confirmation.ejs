@@ -1,0 +1,191 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="confirmation-container py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+      <!-- Success Notification Card -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 text-center mb-4 bg-white">
+        <div class="mb-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-success-subtle text-success rounded-circle" style="width: 72px; height: 72px;">
+            <i class="fa-solid fa-circle-check fs-1"></i>
+          </div>
+        </div>
+        <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill fw-semibold mx-auto mb-2">
+          Reservation Locked &bull; Saved to Database
+        </span>
+        <h2 class="fw-bold display-6 mb-1">Pack your bags! You're all set.</h2>
+        <p class="text-muted fs-6 mb-2">
+          Your reservation has been confirmed with the host. A confirmation email has been dispatched to <b><%= booking.guestEmail %></b>.
+        </p>
+        <div class="d-inline-block bg-light rounded-pill px-4 py-2 border mx-auto mt-2">
+          <span class="text-muted small me-2">BOOKING REFERENCE:</span>
+          <span class="fw-bold fs-6 text-dark tracking-wider">#<%= booking.bookingCode %></span>
+        </div>
+      </div>
+
+      <!-- Printable Boarding Pass / Receipt Slip -->
+      <div class="card border-0 shadow rounded-4 overflow-hidden mb-4" id="printableReceipt">
+        <!-- Receipt Header -->
+        <div class="p-4 text-white d-flex flex-wrap justify-content-between align-items-center" style="background: linear-gradient(135deg, #fe424d, #d90429);">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <i class="fa-solid fa-compass fs-4"></i>
+              <span class="fw-bold fs-5 tracking-wide">roamhaven</span>
+            </div>
+            <p class="small mb-0 text-white-50">Official Guest Reservation Voucher</p>
+          </div>
+          <div class="text-sm-end mt-2 mt-sm-0">
+            <span class="badge bg-white text-danger fw-bold px-3 py-1 rounded-pill">
+              <%= booking.status %>
+            </span>
+            <small class="d-block text-white-50 mt-1">
+              Booked on <%= new Date(booking.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) %>
+            </small>
+          </div>
+        </div>
+
+        <div class="card-body p-4 bg-white">
+          <!-- Property Overview -->
+          <% const listing = booking.listing; %>
+          <div class="row g-3 align-items-center pb-4 border-bottom mb-4">
+            <div class="col-sm-4">
+              <img 
+                src="<%= listing && listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1625244724120-1fd1d34d00f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' %>" 
+                class="img-fluid rounded-3 shadow-sm w-100" 
+                style="height: 120px; object-fit: cover;" 
+                alt="<%= listing ? listing.title : 'Stay' %>"
+              />
+            </div>
+            <div class="col-sm-8">
+              <span class="badge bg-light text-muted border rounded-pill mb-1"><%= listing ? (listing.propertyType || 'Stay') : 'Listing' %></span>
+              <h4 class="fw-bold mb-1"><%= listing ? listing.title : 'Reserved Accommodation' %></h4>
+              <p class="text-muted small mb-0">
+                <i class="fa-solid fa-location-dot text-danger me-1"></i>
+                <%= listing ? (listing.location + ', ' + listing.country) : 'Location confirmed with host' %>
+              </p>
+            </div>
+          </div>
+
+          <!-- Stay Dates & Check-In Timeline -->
+          <div class="row g-3 mb-4 pb-4 border-bottom">
+            <div class="col-6 col-md-3">
+              <span class="text-muted small d-block mb-1">CHECK-IN</span>
+              <h6 class="fw-bold mb-0 text-dark">
+                <%= new Date(booking.checkIn).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) %>
+              </h6>
+              <small class="text-muted">From 2:00 PM</small>
+            </div>
+            <div class="col-6 col-md-3 border-start ps-3">
+              <span class="text-muted small d-block mb-1">CHECK-OUT</span>
+              <h6 class="fw-bold mb-0 text-dark">
+                <%= new Date(booking.checkOut).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) %>
+              </h6>
+              <small class="text-muted">By 11:00 AM</small>
+            </div>
+            <div class="col-6 col-md-3 border-start ps-3">
+              <span class="text-muted small d-block mb-1">DURATION</span>
+              <h6 class="fw-bold mb-0 text-dark"><%= booking.nights %> <%= booking.nights === 1 ? 'Night' : 'Nights' %></h6>
+              <small class="text-muted"><%= booking.guests %> <%= booking.guests === 1 ? 'Guest' : 'Guests' %></small>
+            </div>
+            <div class="col-6 col-md-3 border-start ps-3">
+              <span class="text-muted small d-block mb-1">STATUS</span>
+              <h6 class="fw-bold mb-0 text-success"><i class="fa-solid fa-circle-check me-1"></i> Confirmed</h6>
+              <small class="text-muted">Instant Booking</small>
+            </div>
+          </div>
+
+          <!-- Traveler Information -->
+          <div class="mb-4 pb-4 border-bottom">
+            <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-address-card me-2 text-danger"></i>Guest Details</h6>
+            <div class="row g-2 text-muted small">
+              <div class="col-md-4">
+                <span class="d-block text-secondary">Primary Guest:</span>
+                <strong class="text-dark fs-6"><%= booking.guestName %></strong>
+              </div>
+              <div class="col-md-4">
+                <span class="d-block text-secondary">Email:</span>
+                <strong class="text-dark"><%= booking.guestEmail %></strong>
+              </div>
+              <div class="col-md-4">
+                <span class="d-block text-secondary">Phone:</span>
+                <strong class="text-dark"><%= booking.guestPhone %></strong>
+              </div>
+            </div>
+
+            <% if (booking.specialRequests && booking.specialRequests.trim() !== '') { %>
+              <div class="mt-3 p-3 bg-light rounded-3 small">
+                <span class="text-muted fw-bold d-block mb-1">Notes for Host:</span>
+                <span class="text-dark">"<%= booking.specialRequests %>"</span>
+              </div>
+            <% } %>
+          </div>
+
+          <!-- Transparent Payment & Invoice Breakdown -->
+          <div>
+            <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-receipt me-2 text-danger"></i>Transparent Cost Breakdown</h6>
+            <div class="bg-light rounded-3 p-3 small">
+              <% const pb = booking.priceBreakdown || {}; %>
+              <div class="d-flex justify-content-between mb-2 text-muted">
+                <span>&#8377;<%= (pb.baseNightly || 0).toLocaleString("en-IN") %> &times; <%= booking.nights %> nights</span>
+                <span class="text-dark fw-semibold">&#8377;<%= (pb.baseTotal || 0).toLocaleString("en-IN") %></span>
+              </div>
+
+              <% if (pb.extraGuestFee && pb.extraGuestFee > 0) { %>
+                <div class="d-flex justify-content-between mb-2 text-muted">
+                  <span>Additional guest fees</span>
+                  <span class="text-dark fw-semibold">+&#8377;<%= pb.extraGuestFee.toLocaleString("en-IN") %></span>
+                </div>
+              <% } %>
+
+              <div class="d-flex justify-content-between mb-2 text-muted">
+                <span>Cleaning fee</span>
+                <span class="text-dark fw-semibold">&#8377;<%= (pb.cleaningFee || 500).toLocaleString("en-IN") %></span>
+              </div>
+
+              <div class="d-flex justify-content-between mb-2 text-muted">
+                <span>RoamHaven service fee (5%)</span>
+                <span class="text-dark fw-semibold">&#8377;<%= (pb.serviceFee || 0).toLocaleString("en-IN") %></span>
+              </div>
+
+              <div class="d-flex justify-content-between mb-2 text-muted">
+                <span>Taxes & Government GST (18%)</span>
+                <span class="text-dark fw-semibold">&#8377;<%= (pb.gst || 0).toLocaleString("en-IN") %></span>
+              </div>
+
+              <hr class="my-2">
+
+              <div class="d-flex justify-content-between fs-5 fw-bold text-dark pt-1">
+                <span>Total Paid / Reserved:</span>
+                <span class="text-danger">&#8377;<%= (pb.grandTotal || 0).toLocaleString("en-IN") %></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Receipt Footer Note -->
+        <div class="p-3 bg-light border-top text-center small text-muted">
+          <i class="fa-solid fa-shield-halved text-success me-1"></i>
+          Protected by RoamHaven Traveler Guarantee &bull; Free cancellation up to 48 hours before check-in.
+        </div>
+      </div>
+
+      <!-- Action Navigation Buttons -->
+      <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-5">
+        <a href="/bookings" class="btn btn-outline-dark rounded-pill px-4">
+          <i class="fa-solid fa-arrow-left me-1"></i> Back to My Trips
+        </a>
+        <div class="d-flex gap-2">
+          <button onclick="window.print()" class="btn btn-outline-secondary rounded-pill px-3">
+            <i class="fa-solid fa-print me-1"></i> Print Receipt
+          </button>
+          <% if (listing) { %>
+            <a href="/listings/<%= listing._id %>" class="btn btn-theme rounded-pill px-4 shadow-sm">
+              <i class="fa-solid fa-house me-1"></i> View Stay
+            </a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

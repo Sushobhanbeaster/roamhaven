@@ -1,0 +1,170 @@
+<% layout("/layouts/boilerplate") %>
+
+<!-- Smart RoamHaven Discovery Banner -->
+<div class="feature-highlight-banner p-4 rounded-4 mb-4 text-white shadow-sm position-relative overflow-hidden">
+  <div class="row align-items-center position-relative z-1">
+    <div class="col-lg-8">
+      <span class="badge bg-white text-danger fw-bold px-3 py-1 rounded-pill mb-2">
+        <i class="fa-solid fa-sparkles me-1"></i> Smarter Travel Discovery
+      </span>
+      <h3 class="fw-bold mb-2">Plan, Budget & Discover The Perfect Stay</h3>
+      <p class="mb-3 text-white-50" style="max-width: 650px;">
+        Use our algorithm to find tailored stays within your budget, calculate transparent trip costs with all taxes included, or explore properties on an interactive map.
+      </p>
+      <div class="d-flex flex-wrap gap-2">
+        <a href="/recommendations" class="btn btn-light rounded-pill fw-semibold text-danger px-3 shadow-sm">
+          <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Smart Stay Matcher
+        </a>
+        <a href="/budget-planner" class="btn btn-outline-light rounded-pill fw-semibold px-3">
+          <i class="fa-solid fa-calculator me-1"></i> Trip Budget Planner
+        </a>
+        <a href="/map" class="btn btn-outline-light rounded-pill fw-semibold px-3">
+          <i class="fa-solid fa-map-location-dot me-1"></i> Interactive Map
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-4 text-end d-none d-lg-block">
+      <i class="fa-solid fa-compass display-1 opacity-25"></i>
+    </div>
+  </div>
+</div>
+
+<!-- Category Filters -->
+<div id="filters">
+  <div class="filter active">
+    <div><i class="fa-solid fa-fire"></i></div>
+    <p>Trending</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-solid fa-bed"></i></div>
+    <p>Rooms</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-solid fa-mountain-city"></i></div>
+    <p>Iconic cities</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-solid fa-mountain"></i></div>
+    <p>Mountains</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-brands fa-fort-awesome"></i></div>
+    <p>Castles</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-solid fa-person-swimming"></i></div>
+    <p>Amazing pools</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-solid fa-campground"></i></div>
+    <p>Camping</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-solid fa-cow"></i></div>
+    <p>Farms</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-regular fa-snowflake"></i></div>
+    <p>Arctic</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-solid fa-igloo"></i></div>
+    <p>Domes</p>
+  </div>
+  <div class="filter">
+    <div><i class="fa-solid fa-ship"></i></div>
+    <p>Boats</p>
+  </div>
+
+  <div class="tax-toggle">
+    <div class="form-check-reverse form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="taxSwitch">
+      <label class="form-check-label" for="taxSwitch">Display total after taxes</label>
+    </div>
+  </div>
+</div>
+
+<!-- Header Controls -->
+<div class="d-flex align-items-center justify-content-between mt-3 mb-2">
+  <h5 class="fw-bold m-0">Explore Stays (<%= allListings.length %>)</h5>
+  <div class="d-flex gap-2">
+    <a href="/map" class="btn btn-sm btn-outline-dark rounded-pill">
+      <i class="fa-solid fa-map me-1"></i> Switch to Map View
+    </a>
+  </div>
+</div>
+
+<!-- Listings Grid -->
+<div class="row row-cols-lg-3 row-cols-md-2 row-cols-1 mt-2">
+  <% if (allListings.length === 0) { %>
+    <div class="col-12 text-center py-5">
+      <h4>No listings found!</h4>
+      <p class="text-muted">Try searching for another destination or create a new listing.</p>
+      <a href="/listings" class="btn btn-theme mt-2">View All Listings</a>
+    </div>
+  <% } %>
+
+  <% for (let listing of allListings) { %>
+    <div class="col">
+      <div class="card listing-card h-100 shadow-sm border-0 position-relative">
+        <a href="/listings/<%= listing._id %>" class="listing-link">
+          <div class="card-img-wrapper">
+            <img 
+              src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1625244724120-1fd1d34d00f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' %>" 
+              class="card-img-top" 
+              alt="<%= listing.title %>"
+            />
+            <div class="card-img-overlay"></div>
+            <span class="badge bg-dark bg-opacity-75 text-white position-absolute top-0 start-0 m-2">
+              <%= listing.propertyType || 'Stay' %>
+            </span>
+          </div>
+        </a>
+
+        <!-- Compare Button on Card -->
+        <button 
+          class="btn btn-sm btn-light border shadow-sm rounded-pill position-absolute top-0 end-0 m-3 btn-compare-toggle"
+          style="z-index: 5;"
+          data-id="<%= listing._id %>"
+          onclick="event.preventDefault(); toggleCompare('<%= listing._id %>', '<%= listing.title.replace(/'/g, '') %>', '<%= listing.image && listing.image.url ? listing.image.url : '' %>', <%= listing.price || 0 %>);"
+        >
+          <i class="fa-solid fa-plus me-1"></i> Compare
+        </button>
+
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <a href="/listings/<%= listing._id %>" class="listing-link">
+              <p class="card-title fw-bold m-0"><%= listing.title %></p>
+            </a>
+            <span class="small fw-semibold text-warning text-nowrap ms-1">
+              <i class="fa-solid fa-star"></i> 
+              <%= listing.reviews && listing.reviews.length > 0 
+                  ? (listing.reviews.reduce((acc, r) => acc + r.rating, 0) / listing.reviews.length).toFixed(1)
+                  : "New" %>
+            </span>
+          </div>
+          <p class="card-location text-muted small"><%= listing.location %>, <%= listing.country %></p>
+          <p class="card-price mb-0">
+            &#8377; <%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %> <span class="text-muted fw-normal">/ night</span>
+            <i class="tax-info">&nbsp; &nbsp;+18% GST</i>
+          </p>
+        </div>
+      </div>
+    </div>
+  <% } %>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const taxSwitch = document.getElementById("taxSwitch");
+    if (taxSwitch) {
+      taxSwitch.addEventListener("click", () => {
+        const taxInfo = document.getElementsByClassName("tax-info");
+        for (let info of taxInfo) {
+          info.style.display = (info.style.display !== "inline") ? "inline" : "none";
+        }
+      });
+    }
+  });
+</script>
+

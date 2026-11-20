@@ -1,0 +1,950 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary-color: #ff385c;
+  --primary-hover: #e00b41;
+  --text-main: #222222;
+  --text-muted: #717171;
+  --bg-light: #f7f7f7;
+  --border-color: #ebebeb;
+  --card-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  color: var(--text-main);
+  background-color: #ffffff;
+}
+
+.container-main {
+  flex: 1;
+}
+
+/* Navbar */
+.navbar {
+  height: 5rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+  z-index: 1000;
+}
+
+.fa-compass {
+  color: var(--primary-color);
+  font-size: 2.2rem;
+  transition: transform 0.2s ease;
+}
+
+.navbar-brand:hover .fa-compass {
+  transform: rotate(25deg);
+}
+
+.brand-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primary-color) !important;
+  letter-spacing: -0.5px;
+}
+
+.nav-link {
+  color: var(--text-main) !important;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0.5rem 1rem !important;
+  border-radius: 2rem;
+  transition: background-color 0.2s ease;
+}
+
+.nav-link:hover {
+  background-color: var(--bg-light);
+}
+
+.btn-search {
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 2rem;
+  padding: 0 1rem;
+}
+
+.btn-search:hover {
+  background-color: var(--primary-hover);
+  color: white;
+}
+
+.search-inp {
+  border-radius: 2rem;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.9rem;
+  border: 1px solid #ddd;
+}
+
+/* Category Filters */
+#filters {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  align-items: center;
+  gap: 2rem;
+  padding: 1.2rem 0;
+  scrollbar-width: none;
+}
+
+#filters::-webkit-scrollbar {
+  display: none;
+}
+
+.filter {
+  text-align: center;
+  opacity: 0.7;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--text-main);
+  border-bottom: 2px solid transparent;
+  padding-bottom: 0.4rem;
+}
+
+.filter:hover,
+.filter.active {
+  opacity: 1;
+  border-bottom: 2px solid var(--text-main);
+}
+
+.filter div {
+  font-size: 1.25rem;
+  margin-bottom: 0.3rem;
+}
+
+.filter p {
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.tax-toggle {
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  height: 3.25rem;
+  padding: 1rem;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.tax-info {
+  display: none;
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: 0.85rem;
+}
+
+/* Listing Cards */
+.listing-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.listing-card {
+  border: none !important;
+  margin-bottom: 2rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.listing-card:hover {
+  transform: translateY(-4px);
+}
+
+.card-img-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  aspect-ratio: 20 / 19;
+}
+
+.card-img-top {
+  width: 100%;
+  height: 100% !important;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.listing-card:hover .card-img-top {
+  transform: scale(1.05);
+}
+
+.card-img-overlay {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.listing-card:hover .card-img-overlay {
+  opacity: 0.1;
+  background-color: black;
+}
+
+.card-body {
+  padding: 0.75rem 0.25rem !important;
+}
+
+.card-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-location {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+
+.card-price {
+  font-size: 0.95rem;
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.card-price b {
+  font-weight: 700;
+}
+
+/* Show Listing Page */
+.show-img {
+  height: 28rem;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 1.25rem;
+}
+
+.show-card {
+  border: none;
+}
+
+.listing-author {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.btns {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn-theme {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+  border: none;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.4rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-theme:hover {
+  background-color: var(--primary-hover) !important;
+}
+
+.btn-dark-custom {
+  background-color: #222222 !important;
+  color: white !important;
+  border: none;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.4rem;
+}
+
+.btn-dark-custom:hover {
+  background-color: #000000 !important;
+}
+
+/* Reviews */
+.review-card {
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.star-rating {
+  color: #ffb703;
+}
+
+.interactive-star-rating {
+  display: inline-flex;
+  gap: 0.35rem;
+  font-size: 1.4rem;
+  color: #d1d5db;
+}
+
+.interactive-star-rating .star-btn {
+  cursor: pointer;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.interactive-star-rating .star-btn:hover {
+  transform: scale(1.25);
+}
+
+.interactive-star-rating .star-btn.active {
+  color: #ffb703;
+}
+
+.avatar-badge {
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+
+/* Footer */
+.f-info {
+  background-color: #f7f7f7;
+  border-top: 1px solid var(--border-color);
+  padding: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.f-info-socials {
+  display: flex;
+  gap: 1.2rem;
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.f-info-socials i {
+  cursor: pointer;
+  color: var(--text-main);
+  transition: color 0.2s ease;
+}
+
+.f-info-socials i:hover {
+  color: var(--primary-color);
+}
+
+.f-info-links a {
+  text-decoration: none;
+  color: var(--text-muted);
+  margin: 0 0.5rem;
+}
+
+.f-info-links a:hover {
+  text-decoration: underline;
+  color: var(--text-main);
+}
+
+/* ================= FEATURE ENHANCEMENT STYLES ================= */
+
+/* 1. Feature Highlight Banner on Index */
+.feature-highlight-banner {
+  background: linear-gradient(135deg, #ff385c 0%, #e00b41 50%, #8b0032 100%);
+  border-radius: 1.25rem;
+}
+
+.nav-highlight {
+  font-weight: 600 !important;
+}
+
+.btn-host {
+  border: 1px solid var(--border-color);
+  border-radius: 2rem !important;
+  padding: 0.4rem 1rem !important;
+}
+
+/* 2. Feature 1: Smart Stay Recommendation System */
+.rec-hero {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.filter-wizard-card {
+  background-color: #fafafa;
+  border: 1px solid var(--border-color) !important;
+}
+
+.match-score-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 5;
+  color: #ffffff;
+  padding: 0.35rem 0.75rem;
+  border-radius: 2rem;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: -0.2px;
+}
+
+.amenity-checkbox-pill {
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background-color: #ffffff;
+  padding: 0.4rem 0.85rem;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-main);
+  transition: all 0.2s ease;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.amenity-checkbox-pill input {
+  display: none;
+}
+
+.amenity-checkbox-pill.checked {
+  background-color: #222222;
+  color: #ffffff;
+  border-color: #222222;
+}
+
+/* 3. Feature 2: Smart Trip Budget Planner */
+.budget-calculator-widget {
+  border: 1px solid var(--border-color) !important;
+  background-color: #ffffff;
+}
+
+.cost-breakdown-box {
+  border: 1px solid var(--border-color);
+}
+
+/* 4. Feature 3: Map Discovery & Price Pins */
+.custom-map-price-marker {
+  background: none;
+  border: none;
+}
+
+.price-pill-marker {
+  background-color: #ffffff;
+  color: #222222;
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+  text-align: center;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+}
+
+.price-pill-marker:hover,
+.price-pill-marker.active {
+  background-color: #ff385c;
+  color: #ffffff;
+  transform: scale(1.15);
+  border-color: #ff385c;
+  z-index: 9999;
+}
+
+.map-popup-card {
+  width: 220px;
+}
+
+.map-popup-img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.single-pin-badge {
+  background-color: #ff385c;
+  color: #ffffff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(255, 56, 92, 0.4);
+  font-size: 1rem;
+}
+
+/* 5. Feature 4: Compare Properties Side-by-Side */
+.btn-compare-toggle {
+  font-size: 0.78rem !important;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-compare-active {
+  background-color: #222222 !important;
+  color: #ffffff !important;
+  border-color: #222222 !important;
+}
+
+.compare-tray {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border-top: 1px solid var(--border-color);
+  z-index: 1050;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.compare-badge {
+  font-size: 0.95rem;
+}
+
+.compare-item-preview {
+  width: 44px;
+  height: 44px;
+}
+
+.compare-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.compare-thumb-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #222222;
+  color: #ffffff;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 11px;
+  line-height: 16px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.compare-thumb-remove:hover {
+  background: #ff385c;
+}
+
+.compare-table th,
+.compare-table td {
+  padding: 1rem !important;
+}
+
+/* ================= DARK MODE THEME SYSTEM ================= */
+
+.theme-toggle-btn {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50% !important;
+  border: 1px solid var(--border-color);
+  background-color: transparent;
+  color: var(--text-main);
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.theme-toggle-btn:hover {
+  transform: rotate(15deg) scale(1.08);
+  border-color: var(--primary-color);
+  background-color: var(--bg-light);
+}
+
+[data-theme="dark"],
+[data-bs-theme="dark"] {
+  --text-main: #f4f4f5;
+  --text-muted: #a1a1aa;
+  --bg-light: #202024;
+  --border-color: #2e2e33;
+  --card-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  background-color: #121214;
+  color: #f4f4f5;
+}
+
+[data-theme="dark"] body,
+[data-bs-theme="dark"] body {
+  background-color: #121214;
+  color: #f4f4f5;
+}
+
+/* Navbar in Dark Mode */
+[data-theme="dark"] .navbar,
+[data-bs-theme="dark"] .navbar {
+  background-color: #18181b !important;
+  border-bottom: 1px solid #27272a;
+}
+
+[data-theme="dark"] .nav-link,
+[data-bs-theme="dark"] .nav-link {
+  color: #e4e4e7 !important;
+}
+
+[data-theme="dark"] .nav-link:hover,
+[data-bs-theme="dark"] .nav-link:hover {
+  background-color: #27272a;
+}
+
+[data-theme="dark"] .search-inp,
+[data-bs-theme="dark"] .search-inp {
+  background-color: #27272a;
+  border-color: #3f3f46;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .search-inp::placeholder,
+[data-bs-theme="dark"] .search-inp::placeholder {
+  color: #71717a;
+}
+
+/* Cards & Containers in Dark Mode */
+[data-theme="dark"] .card,
+[data-bs-theme="dark"] .card {
+  background-color: #1c1c20;
+  border-color: #27272a;
+  color: #f4f4f5;
+}
+
+[data-theme="dark"] .filter,
+[data-bs-theme="dark"] .filter {
+  color: #d4d4d8;
+}
+
+[data-theme="dark"] .filter:hover,
+[data-theme="dark"] .filter.active,
+[data-bs-theme="dark"] .filter:hover,
+[data-bs-theme="dark"] .filter.active {
+  color: #ffffff;
+  border-bottom-color: #ffffff;
+}
+
+[data-theme="dark"] .tax-toggle,
+[data-bs-theme="dark"] .tax-toggle {
+  background-color: #1c1c20;
+  border-color: #27272a;
+  color: #d4d4d8;
+}
+
+[data-theme="dark"] .tax-info,
+[data-bs-theme="dark"] .tax-info {
+  color: #a1a1aa;
+}
+
+/* Forms, Inputs & Selects */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select,
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+  background-color: #27272a;
+  border-color: #3f3f46;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus,
+[data-bs-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .form-select:focus {
+  background-color: #2c2c31;
+  border-color: var(--primary-color);
+  color: #ffffff;
+  box-shadow: 0 0 0 0.25rem rgba(255, 56, 92, 0.25);
+}
+
+[data-theme="dark"] .input-group-text,
+[data-bs-theme="dark"] .input-group-text {
+  background-color: #27272a;
+  border-color: #3f3f46;
+  color: #a1a1aa;
+}
+
+/* Features in Dark Mode */
+[data-theme="dark"] .filter-wizard-card,
+[data-bs-theme="dark"] .filter-wizard-card {
+  background-color: #18181b;
+  border-color: #27272a !important;
+}
+
+[data-theme="dark"] .amenity-checkbox-pill,
+[data-bs-theme="dark"] .amenity-checkbox-pill {
+  background-color: #27272a;
+  border-color: #3f3f46;
+  color: #e4e4e7;
+}
+
+[data-theme="dark"] .amenity-checkbox-pill.checked,
+[data-bs-theme="dark"] .amenity-checkbox-pill.checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .budget-calculator-widget,
+[data-bs-theme="dark"] .budget-calculator-widget {
+  background-color: #1c1c20;
+  border-color: #27272a !important;
+}
+
+/* Dark Mode Typography & Visibility Fixes */
+[data-theme="dark"] .text-dark,
+[data-bs-theme="dark"] .text-dark {
+  color: #f4f4f5 !important;
+}
+
+[data-theme="dark"] .text-secondary,
+[data-bs-theme="dark"] .text-secondary {
+  color: #d4d4d8 !important;
+}
+
+[data-theme="dark"] .text-muted,
+[data-bs-theme="dark"] .text-muted {
+  color: #a1a1aa !important;
+}
+
+/* Backgrounds in Dark Mode */
+[data-theme="dark"] .bg-white,
+[data-bs-theme="dark"] .bg-white {
+  background-color: #242428 !important;
+  color: #f4f4f5 !important;
+  border-color: #3f3f46 !important;
+}
+
+[data-theme="dark"] .bg-light,
+[data-bs-theme="dark"] .bg-light {
+  background-color: #242428 !important;
+  color: #f4f4f5 !important;
+  border-color: #3f3f46 !important;
+}
+
+/* Badges & Landmarks in Dark Mode */
+[data-theme="dark"] .badge.bg-light,
+[data-bs-theme="dark"] .badge.bg-light {
+  background-color: #27272a !important;
+  color: #f4f4f5 !important;
+  border-color: #3f3f46 !important;
+}
+
+[data-theme="dark"] .badge.text-dark,
+[data-bs-theme="dark"] .badge.text-dark {
+  color: #f4f4f5 !important;
+}
+
+[data-theme="dark"] .badge.bg-secondary-subtle,
+[data-bs-theme="dark"] .badge.bg-secondary-subtle {
+  background-color: #2e2e33 !important;
+  color: #f4f4f5 !important;
+}
+
+/* Booking Dates Box inside Calculator in Dark Mode */
+[data-theme="dark"] .booking-dates-box,
+[data-bs-theme="dark"] .booking-dates-box {
+  background-color: #27272a !important;
+  border-color: #3f3f46 !important;
+}
+
+[data-theme="dark"] .booking-dates-box .border-start,
+[data-theme="dark"] .booking-dates-box .border-top,
+[data-bs-theme="dark"] .booking-dates-box .border-start,
+[data-bs-theme="dark"] .booking-dates-box .border-top {
+  border-color: #3f3f46 !important;
+}
+
+[data-theme="dark"] .booking-dates-box .form-control,
+[data-theme="dark"] .booking-dates-box .form-select,
+[data-bs-theme="dark"] .booking-dates-box .form-control,
+[data-bs-theme="dark"] .booking-dates-box .form-select {
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
+/* Date Picker Calendar Indicator in Dark Mode */
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
+[data-bs-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.9);
+  cursor: pointer;
+}
+
+/* Cost Breakdown Box in Dark Mode */
+[data-theme="dark"] .cost-breakdown-box,
+[data-bs-theme="dark"] .cost-breakdown-box {
+  background-color: #242428 !important;
+  border: 1px solid #323238 !important;
+}
+
+[data-theme="dark"] .cost-breakdown-box span.text-dark,
+[data-bs-theme="dark"] .cost-breakdown-box span.text-dark {
+  color: #f4f4f5 !important;
+}
+
+[data-theme="dark"] .cost-breakdown-box hr,
+[data-bs-theme="dark"] .cost-breakdown-box hr {
+  border-color: #3f3f46 !important;
+}
+
+/* Modal in Dark Mode */
+[data-theme="dark"] .modal-content,
+[data-bs-theme="dark"] .modal-content {
+  background-color: #1c1c20 !important;
+  color: #f4f4f5 !important;
+  border: 1px solid #2e2e33 !important;
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer,
+[data-bs-theme="dark"] .modal-header,
+[data-bs-theme="dark"] .modal-footer {
+  background-color: #242428 !important;
+  color: #f4f4f5 !important;
+  border-color: #323238 !important;
+}
+
+[data-theme="dark"] .btn-close,
+[data-bs-theme="dark"] .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Amenities Form Check in Dark Mode */
+[data-theme="dark"] .form-check-inline.border,
+[data-bs-theme="dark"] .form-check-inline.border {
+  background-color: #27272a !important;
+  border-color: #3f3f46 !important;
+  color: #f4f4f5 !important;
+}
+
+/* Compare Tray in Dark Mode */
+[data-theme="dark"] .compare-tray,
+[data-bs-theme="dark"] .compare-tray {
+  background-color: #18181b;
+  border-top-color: #27272a;
+  color: #f4f4f5;
+}
+
+/* Footer in Dark Mode */
+[data-theme="dark"] .f-info,
+[data-bs-theme="dark"] .f-info {
+  background-color: #161618;
+  border-top-color: #27272a;
+  color: #a1a1aa;
+}
+
+[data-theme="dark"] .f-info-socials i,
+[data-bs-theme="dark"] .f-info-socials i {
+  color: #d4d4d8;
+}
+
+/* Map Price Pills in Dark Mode */
+[data-theme="dark"] .price-pill-marker,
+[data-bs-theme="dark"] .price-pill-marker {
+  background-color: #1f1f23;
+  color: #ffffff;
+  border-color: #3f3f46;
+}
+
+[data-theme="dark"] .price-pill-marker:hover,
+[data-bs-theme="dark"] .price-pill-marker:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .leaflet-popup-content-wrapper,
+[data-bs-theme="dark"] .leaflet-popup-content-wrapper {
+  background-color: #1c1c20;
+  color: #f4f4f5;
+  border-radius: 12px;
+}
+
+[data-theme="dark"] .leaflet-popup-tip,
+[data-bs-theme="dark"] .leaflet-popup-tip {
+  background-color: #1c1c20;
+}
+
+/* Comparison Table in Dark Mode */
+[data-theme="dark"] .compare-table thead tr,
+[data-bs-theme="dark"] .compare-table thead tr {
+  background-color: #242428 !important;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .table-light,
+[data-bs-theme="dark"] .table-light {
+  background-color: #242428 !important;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .table-primary-subtle,
+[data-bs-theme="dark"] .table-primary-subtle {
+  background-color: #1e2638 !important;
+  color: #93c5fd;
+}
+
+/* Trips & Bookings Enhancements */
+.trip-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid var(--border-color) !important;
+}
+
+.trip-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+.hover-underline:hover {
+  text-decoration: underline !important;
+}
+
+/* Print Receipt Styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printableReceipt, #printableReceipt * {
+    visibility: visible;
+  }
+  #printableReceipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+  .navbar, footer, #compareTray, #themeToggleBtn {
+    display: none !important;
+  }
+}
+
+
+

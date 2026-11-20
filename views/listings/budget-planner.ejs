@@ -1,0 +1,248 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="budget-planner-container">
+  <!-- Header -->
+  <div class="py-3 mb-4">
+    <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-semibold mb-2">
+      <i class="fa-solid fa-calculator me-1"></i> Transparent Trip Pricing
+    </span>
+    <h2 class="fw-bold display-6 mb-2">Smart Trip Budget Planner</h2>
+    <p class="text-muted fs-6 mb-0">
+      Never get surprised by hidden costs. Calculate the true, all-inclusive estimated cost of your trip (base nights + extra guest charges + cleaning fees + service fees + 18% GST) and see exactly which stays fit your budget.
+    </p>
+  </div>
+
+  <!-- Planner Filter Bar -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+    <form action="/budget-planner" method="GET" class="row g-3 align-items-end">
+      <!-- Destination -->
+      <div class="col-md-3">
+        <label class="form-label fw-bold small text-muted">DESTINATION</label>
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-location-dot text-danger"></i></span>
+          <input 
+            type="text" 
+            name="destination" 
+            class="form-control border-start-0" 
+            placeholder="Where are you going?" 
+            value="<%= params.destination %>"
+          />
+        </div>
+      </div>
+
+      <!-- Dates -->
+      <div class="col-md-2">
+        <label class="form-label fw-bold small text-muted">CHECK-IN</label>
+        <input 
+          type="date" 
+          name="checkIn" 
+          id="checkInDate" 
+          class="form-control" 
+          value="<%= params.checkIn %>" 
+          required 
+          onchange="validateDates()"
+        />
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label fw-bold small text-muted">CHECK-OUT</label>
+        <input 
+          type="date" 
+          name="checkOut" 
+          id="checkOutDate" 
+          class="form-control" 
+          value="<%= params.checkOut %>" 
+          required 
+          onchange="validateDates()"
+        />
+      </div>
+
+      <!-- Guests -->
+      <div class="col-md-2">
+        <label class="form-label fw-bold small text-muted">GUESTS</label>
+        <select name="guests" class="form-select">
+          <% for(let g = 1; g <= 8; g++) { %>
+            <option value="<%= g %>" <%= params.guests == g ? 'selected' : '' %>>
+              <%= g %> <%= g === 1 ? 'Guest' : 'Guests' %>
+            </option>
+          <% } %>
+        </select>
+      </div>
+
+      <!-- Total Trip Budget -->
+      <div class="col-md-3">
+        <label class="form-label fw-bold small text-muted">TOTAL TRIP BUDGET (&#8377;)</label>
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0">&#8377;</span>
+          <input 
+            type="number" 
+            name="maxBudget" 
+            class="form-control border-start-0" 
+            placeholder="e.g. 10000" 
+            value="<%= params.maxBudget %>"
+          />
+        </div>
+      </div>
+
+      <!-- Options & Submit -->
+      <div class="col-12 d-flex flex-wrap align-items-center justify-content-between pt-2 border-top">
+        <div class="form-check form-switch">
+          <input 
+            class="form-check-input" 
+            type="checkbox" 
+            role="switch" 
+            name="withinBudgetOnly" 
+            value="true" 
+            id="budgetSwitch"
+            <%= params.withinBudgetOnly ? 'checked' : '' %>
+          >
+          <label class="form-check-label fw-medium" for="budgetSwitch">
+            Only show stays within my budget
+          </label>
+        </div>
+
+        <div class="d-flex gap-2">
+          <a href="/budget-planner" class="btn btn-outline-secondary rounded-pill px-3">Reset</a>
+          <button type="submit" class="btn btn-theme rounded-pill px-4">
+            <i class="fa-solid fa-calculator me-1"></i> Recalculate Trip Total
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Summary Ribbon -->
+  <div class="alert alert-light border rounded-4 d-flex flex-wrap align-items-center justify-content-between mb-4 py-3 px-4">
+    <div class="d-flex align-items-center gap-3">
+      <div class="trip-stat">
+        <small class="text-muted d-block">Stay Duration</small>
+        <span class="fw-bold fs-5 text-dark"><i class="fa-solid fa-moon text-primary me-1"></i> <%= params.nights %> Nights</span>
+      </div>
+      <div class="vr mx-2"></div>
+      <div class="trip-stat">
+        <small class="text-muted d-block">Travelers</small>
+        <span class="fw-bold fs-5 text-dark"><i class="fa-solid fa-users text-danger me-1"></i> <%= params.guests %> Guests</span>
+      </div>
+      <% if (params.maxBudget) { %>
+        <div class="vr mx-2"></div>
+        <div class="trip-stat">
+          <small class="text-muted d-block">Trip Budget Target</small>
+          <span class="fw-bold fs-5 text-success">&#8377;<%= Number(params.maxBudget).toLocaleString("en-IN") %></span>
+        </div>
+      <% } %>
+    </div>
+    <div class="mt-2 mt-md-0">
+      <span class="text-muted small">Showing <%= plannedListings.length %> stays matching your parameters</span>
+    </div>
+  </div>
+
+  <!-- Results List -->
+  <div class="row row-cols-1 row-cols-lg-2 g-4 mb-5">
+    <% for(let item of plannedListings) { 
+        const { listing, nights, guests, baseNightly, baseTotal, extraGuestFee, cleaningFee, serviceFee, subtotal, gst, grandTotal, isWithinBudget, delta } = item;
+    %>
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative">
+          <div class="row g-0 h-100">
+            <!-- Left: Thumbnail -->
+            <div class="col-md-5 position-relative">
+              <img 
+                src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1625244724120-1fd1d34d00f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' %>" 
+                class="img-fluid h-100 w-100" 
+                style="object-fit: cover; min-height: 220px;" 
+                alt="<%= listing.title %>"
+              />
+              <span class="badge bg-dark bg-opacity-75 text-white position-absolute top-0 start-0 m-2">
+                <%= listing.propertyType || 'Stay' %>
+              </span>
+            </div>
+
+            <!-- Right: Content & Cost Breakdown -->
+            <div class="col-md-7 d-flex flex-column justify-content-between p-3">
+              <div>
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                  <h6 class="fw-bold mb-0 text-truncate" style="max-width: 200px;" title="<%= listing.title %>">
+                    <%= listing.title %>
+                  </h6>
+                  <span class="text-warning small fw-semibold">
+                    <i class="fa-solid fa-star"></i> 
+                    <%= listing.reviews && listing.reviews.length > 0 
+                        ? (listing.reviews.reduce((acc, r) => acc + r.rating, 0) / listing.reviews.length).toFixed(1)
+                        : "New" %>
+                  </span>
+                </div>
+                <p class="text-muted small mb-2">
+                  <i class="fa-solid fa-location-dot text-danger me-1"></i> <%= listing.location %>, <%= listing.country %>
+                </p>
+
+                <!-- Budget Fit Indicator -->
+                <% if (params.maxBudget) { %>
+                  <% if (isWithinBudget) { %>
+                    <div class="badge bg-success-subtle text-success border border-success-subtle rounded-pill mb-2 px-2 py-1">
+                      <i class="fa-solid fa-circle-check me-1"></i> Within Budget (Saves &#8377;<%= Math.abs(delta).toLocaleString("en-IN") %>)
+                    </div>
+                  <% } else { %>
+                    <div class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill mb-2 px-2 py-1">
+                      <i class="fa-solid fa-circle-exclamation me-1"></i> Over Budget by &#8377;<%= delta.toLocaleString("en-IN") %>
+                    </div>
+                  <% } %>
+                <% } %>
+
+                <!-- Price Breakdown Accordion / Pills -->
+                <div class="bg-light rounded-3 p-2 small mb-2">
+                  <div class="d-flex justify-content-between text-muted mb-1">
+                    <span>&#8377;<%= baseNightly.toLocaleString("en-IN") %> &times; <%= nights %> nights</span>
+                    <span>&#8377;<%= baseTotal.toLocaleString("en-IN") %></span>
+                  </div>
+                  <% if (extraGuestFee > 0) { %>
+                    <div class="d-flex justify-content-between text-muted mb-1">
+                      <span>Extra guests (<%= guests - 2 %>)</span>
+                      <span>+&#8377;<%= extraGuestFee.toLocaleString("en-IN") %></span>
+                    </div>
+                  <% } %>
+                  <div class="d-flex justify-content-between text-muted mb-1">
+                    <span>Cleaning & Service fee</span>
+                    <span>&#8377;<%= (cleaningFee + serviceFee).toLocaleString("en-IN") %></span>
+                  </div>
+                  <div class="d-flex justify-content-between text-muted mb-1">
+                    <span>GST (18%)</span>
+                    <span>&#8377;<%= gst.toLocaleString("en-IN") %></span>
+                  </div>
+                  <hr class="my-1">
+                  <div class="d-flex justify-content-between fw-bold text-dark">
+                    <span>Estimated Total:</span>
+                    <span class="text-danger fs-6">&#8377;<%= grandTotal.toLocaleString("en-IN") %></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action buttons -->
+              <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                <button 
+                  class="btn btn-sm btn-outline-secondary rounded-pill btn-compare-toggle"
+                  data-id="<%= listing._id %>"
+                  onclick="toggleCompare('<%= listing._id %>', '<%= listing.title.replace(/'/g, '') %>', '<%= listing.image && listing.image.url ? listing.image.url : '' %>', <%= listing.price || 0 %>)"
+                >
+                  <i class="fa-solid fa-plus me-1"></i> Compare
+                </button>
+                <a href="/listings/<%= listing._id %>" class="btn btn-sm btn-theme rounded-pill px-3">
+                  Book Stay <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<script>
+  function validateDates() {
+    const cIn = document.getElementById("checkInDate").value;
+    const cOut = document.getElementById("checkOutDate").value;
+    if (cIn && cOut && new Date(cOut) <= new Date(cIn)) {
+      alert("Check-out date must be after check-in date!");
+    }
+  }
+</script>

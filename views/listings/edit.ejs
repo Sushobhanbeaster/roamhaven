@@ -1,0 +1,193 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row justify-content-center mt-3 mb-5">
+  <div class="col-12 col-md-8">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <h3 class="fw-bold m-0">Edit Listing</h3>
+      <a href="/listings/<%= listing._id %>" class="btn btn-sm btn-outline-secondary rounded-pill px-3">Cancel</a>
+    </div>
+
+    <form method="POST" action="/listings/<%= listing._id %>?_method=PUT" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label for="title" class="form-label fw-semibold">Title</label>
+        <input 
+          name="listing[title]" 
+          id="title"
+          value="<%= listing.title %>" 
+          type="text" 
+          class="form-control" 
+          required 
+        />
+        <div class="invalid-feedback">Please enter a valid title.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="description" class="form-label fw-semibold">Description</label>
+        <textarea 
+          name="listing[description]" 
+          id="description"
+          class="form-control" 
+          rows="3"
+          required
+        ><%= listing.description %></textarea>
+        <div class="invalid-feedback">Please enter a short description.</div>
+      </div>
+
+      <!-- Current Image Preview -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold d-block">Original Listing Image</label>
+        <img 
+          src="<%= listing.image && listing.image.url ? listing.image.url : '' %>" 
+          alt="Listing image" 
+          class="img-thumbnail rounded-3" 
+          style="height: 160px; width: 250px; object-fit: cover;"
+        >
+      </div>
+
+      <div class="mb-3">
+        <label for="image" class="form-label fw-semibold">Update Image URL</label>
+        <input 
+          name="listing[image]" 
+          id="image"
+          value="<%= listing.image && listing.image.url ? listing.image.url : '' %>" 
+          type="text" 
+          class="form-control" 
+        />
+      </div>
+
+      <div class="row">
+        <div class="mb-3 col-md-4">
+          <label for="price" class="form-label fw-semibold">Price per night (&#8377;)</label>
+          <input 
+            name="listing[price]" 
+            id="price"
+            value="<%= listing.price %>" 
+            type="number" 
+            class="form-control" 
+            required 
+            min="1"
+          />
+          <div class="invalid-feedback">Price should be a valid positive number.</div>
+        </div>
+
+        <div class="mb-3 col-md-4">
+          <label for="propertyType" class="form-label fw-semibold">Property Type</label>
+          <select name="listing[propertyType]" id="propertyType" class="form-select">
+            <% const types = ["Apartment", "Villa", "Cottage", "Chalet", "Loft", "Treehouse", "Cabin", "Resort", "Ryokan", "Other"]; %>
+            <% for(let t of types) { %>
+              <option value="<%= t %>" <%= listing.propertyType === t ? 'selected' : '' %>><%= t %></option>
+            <% } %>
+          </select>
+        </div>
+
+        <div class="mb-3 col-md-4">
+          <label for="maxGuests" class="form-label fw-semibold">Max Guests</label>
+          <input 
+            name="listing[maxGuests]" 
+            id="maxGuests"
+            type="number" 
+            class="form-control" 
+            value="<%= listing.maxGuests || 4 %>" 
+            min="1" 
+            max="20"
+          />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="mb-3 col-md-6">
+          <label for="location" class="form-label fw-semibold">Location / City</label>
+          <input 
+            name="listing[location]" 
+            id="location"
+            value="<%= listing.location %>" 
+            type="text" 
+            class="form-control" 
+            required 
+          />
+          <div class="invalid-feedback">Location should be valid.</div>
+        </div>
+
+        <div class="mb-3 col-md-6">
+          <label for="country" class="form-label fw-semibold">Country</label>
+          <input 
+            name="listing[country]" 
+            id="country"
+            value="<%= listing.country %>" 
+            type="text" 
+            class="form-control" 
+            required 
+          />
+          <div class="invalid-feedback">Please provide a country name.</div>
+        </div>
+      </div>
+
+      <!-- Feature 3: Map Coordinates -->
+      <div class="row">
+        <div class="mb-3 col-md-6">
+          <label for="lat" class="form-label fw-semibold">Latitude</label>
+          <input 
+            name="lat" 
+            id="lat"
+            type="number" 
+            step="any"
+            value="<%= (listing.geometry && listing.geometry.lat) ? listing.geometry.lat : 20.2961 %>"
+            class="form-control" 
+          />
+        </div>
+
+        <div class="mb-3 col-md-6">
+          <label for="lng" class="form-label fw-semibold">Longitude</label>
+          <input 
+            name="lng" 
+            id="lng"
+            type="number" 
+            step="any"
+            value="<%= (listing.geometry && listing.geometry.lng) ? listing.geometry.lng : 85.8245 %>"
+            class="form-control" 
+          />
+        </div>
+      </div>
+
+      <!-- Amenities -->
+      <div class="mb-4">
+        <label class="form-label fw-semibold d-block">Available Amenities</label>
+        <div class="d-flex flex-wrap gap-2">
+          <% 
+            const allAmenities = ["Wifi", "Free Parking", "Air Conditioning", "Kitchen", "Dedicated Workspace", "Swimming Pool", "Pet Friendly", "TV"]; 
+            const currentAmenities = listing.amenities || [];
+          %>
+          <% for(let am of allAmenities) { 
+              const isChecked = currentAmenities.some(a => a.toLowerCase() === am.toLowerCase());
+          %>
+            <div class="form-check form-check-inline border rounded-pill px-3 py-1 bg-light">
+              <input class="form-check-input" type="checkbox" name="listing[amenities]" value="<%= am %>" id="edit_am_<%= am.replace(/\s+/g, '') %>" <%= isChecked ? 'checked' : '' %>>
+              <label class="form-check-label small" for="edit_am_<%= am.replace(/\s+/g, '') %>"><%= am %></label>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="d-grid">
+        <button class="btn btn-theme py-2 fs-5 rounded-pill shadow-sm">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  (() => {
+    'use strict'
+    const forms = document.querySelectorAll('.needs-validation')
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+      }, false)
+    })
+  })()
+</script>
+

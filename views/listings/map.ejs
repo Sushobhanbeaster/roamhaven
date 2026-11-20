@@ -1,0 +1,163 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="map-page-container">
+  <!-- Top Bar with Category Filter & Controls -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+    <div>
+      <h3 class="fw-bold m-0"><i class="fa-solid fa-map-location-dot text-danger me-2"></i> Map Discovery</h3>
+      <p class="text-muted small mb-0">Browse and compare properties geographically with interactive price markers</p>
+    </div>
+
+    <!-- Category Pills -->
+    <div class="d-flex flex-wrap gap-1 align-items-center">
+      <% 
+        const categories = ["All", "Apartment", "Villa", "Cottage", "Chalet", "Loft", "Treehouse", "Cabin", "Resort", "Ryokan", "Other"];
+      %>
+      <% for(let cat of categories) { %>
+        <a 
+          href="/map?category=<%= cat %>" 
+          class="btn btn-sm rounded-pill <%= activeCategory === cat ? 'btn-dark' : 'btn-outline-secondary' %>"
+        >
+          <%= cat %>
+        </a>
+      <% } %>
+      <a href="/listings" class="btn btn-sm btn-outline-dark rounded-pill ms-2">
+        <i class="fa-solid fa-table-cells me-1"></i> Grid View
+      </a>
+    </div>
+  </div>
+
+  <!-- Map + Split Card List Layout -->
+  <div class="row g-3">
+    <!-- Map Canvas (Leaflet) -->
+    <div class="col-lg-8">
+      <div id="discoveryMap" class="rounded-4 shadow-sm" style="height: 650px; width: 100%; z-index: 1;"></div>
+    </div>
+
+    <!-- Right Listings Scrollable Panel -->
+    <div class="col-lg-4">
+      <div class="listings-map-sidebar pe-1" style="max-height: 650px; overflow-y: auto;">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="fw-bold small text-muted text-uppercase"><%= listings.length %> Stays on Map</span>
+          <span class="text-muted small">Click any pin or card</span>
+        </div>
+
+        <% for(let listing of listings) { %>
+          <div 
+            class="card map-sidebar-card border-0 shadow-sm rounded-3 mb-3 overflow-hidden cursor-pointer"
+            id="sidebar-card-<%= listing._id %>"
+            onclick="focusMarker('<%= listing._id %>')"
+          >
+            <div class="row g-0">
+              <div class="col-5 position-relative">
+                <img 
+                  src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1625244724120-1fd1d34d00f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' %>" 
+                  class="img-fluid h-100 w-100" 
+                  style="object-fit: cover; min-height: 110px;" 
+                  alt="<%= listing.title %>"
+                />
+              </div>
+              <div class="col-7 p-2 d-flex flex-column justify-content-between">
+                <div>
+                  <h6 class="fw-bold text-truncate mb-1" title="<%= listing.title %>"><%= listing.title %></h6>
+                  <p class="text-muted small mb-1"><i class="fa-solid fa-location-dot text-danger"></i> <%= listing.location %></p>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="fw-bold text-dark">&#8377;<%= listing.price ? listing.price.toLocaleString("en-IN") : 'N/A' %> <small class="text-muted fw-normal">/ night</small></span>
+                  <a href="/listings/<%= listing._id %>" class="btn btn-sm btn-outline-danger py-0 px-2 rounded-pill" style="font-size: 0.75rem;">Details</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Embedded Listing Coordinates for Map Rendering -->
+<script>
+  const listingsData = <%- JSON.stringify(listings) %>;
+
+  document.addEventListener("DOMContentLoaded", () => {
+    // Center map around first listing or default
+    const defaultCenter = (listingsData.length > 0 && listingsData[0].geometry && listingsData[0].geometry.lat)
+      ? [listingsData[0].geometry.lat, listingsData[0].geometry.lng]
+      : [20.2961, 85.8245];
+
+    const map = L.map('discoveryMap').setView(defaultCenter, 3);
+
+    // Add OpenStreetMap Tile Layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    const markersMap = {};
+    const bounds = L.latLngBounds();
+
+    listingsData.forEach(item => {
+      if (item.geometry && item.geometry.lat && item.geometry.lng) {
+        const lat = item.geometry.lat;
+        const lng = item.geometry.lng;
+        bounds.extend([lat, lng]);
+
+        // Custom Price Pill Icon
+        const priceLabel = item.price ? `₹${item.price.toLocaleString("en-IN")}` : '₹';
+        const priceIcon = L.divIcon({
+          className: 'custom-map-price-marker',
+          html: `<div class="price-pill-marker shadow-sm" id="marker-${item._id}">${priceLabel}</div>`,
+          iconSize: [65, 28],
+          iconAnchor: [32, 14]
+        });
+
+        // Popup Content
+        const popupContent = `
+          <div class="map-popup-card">
+            <img src="${item.image && item.image.url ? item.image.url : ''}" alt="${item.title}" class="map-popup-img" />
+            <div class="p-2">
+              <h6 class="fw-bold mb-1 text-truncate">${item.title}</h6>
+              <p class="text-muted small mb-1"><i class="fa-solid fa-location-dot text-danger"></i> ${item.location}, ${item.country}</p>
+              <div class="d-flex justify-content-between align-items-center mt-2">
+                <span class="fw-bold text-danger">₹${item.price ? item.price.toLocaleString("en-IN") : 'N/A'}/night</span>
+                <a href="/listings/${item._id}" class="btn btn-sm btn-theme py-0 px-2 rounded-pill">View</a>
+              </div>
+            </div>
+          </div>
+        `;
+
+        const marker = L.marker([lat, lng], { icon: priceIcon })
+          .addTo(map)
+          .bindPopup(popupContent);
+
+        markersMap[item._id] = marker;
+
+        marker.on('click', () => {
+          highlightCard(item._id);
+        });
+      }
+    });
+
+    if (listingsData.length > 0) {
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
+    }
+
+    window.focusMarker = function(id) {
+      const marker = markersMap[id];
+      if (marker) {
+        map.setView(marker.getLatLng(), 13, { animate: true });
+        marker.openPopup();
+        highlightCard(id);
+      }
+    };
+
+    function highlightCard(id) {
+      document.querySelectorAll(".map-sidebar-card").forEach(c => c.classList.remove("border-danger", "border-2"));
+      const card = document.getElementById(`sidebar-card-${id}`);
+      if (card) {
+        card.classList.add("border-danger", "border-2");
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+  });
+</script>

@@ -1,0 +1,57 @@
+<nav class="navbar navbar-expand-lg sticky-top">
+  <div class="container-fluid px-md-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/listings">
+      <i class="fa-solid fa-compass"></i>
+      <span class="brand-name">roamhaven</span>
+    </a>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav mx-auto my-2 my-lg-0">
+        <form class="d-flex" role="search" action="/listings" method="GET">
+          <input class="form-control me-2 search-inp" type="search" name="q" placeholder="Search city, country, stays..." aria-label="Search">
+          <button class="btn btn-search" type="submit">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </form>
+      </div>
+
+      <div class="navbar-nav ms-auto align-items-lg-center gap-1">
+        <a class="nav-link nav-highlight" href="/recommendations" title="AI-powered stay recommendation">
+          <i class="fa-solid fa-wand-magic-sparkles text-danger me-1"></i> Smart Match
+        </a>
+        <a class="nav-link" href="/budget-planner" title="Calculate real trip costs with taxes & fees">
+          <i class="fa-solid fa-calculator me-1 text-primary"></i> Budget Planner
+        </a>
+        <a class="nav-link" href="/map" title="Interactive map with price pins">
+          <i class="fa-solid fa-map-location-dot me-1 text-success"></i> Map View
+        </a>
+        <a class="nav-link" href="/listings/compare" title="Side by side property comparison">
+          <i class="fa-solid fa-code-compare me-1 text-warning"></i> Compare
+        </a>
+        <a class="nav-link" href="/bookings" title="View your booked stays and reservations">
+          <i class="fa-solid fa-suitcase-rolling me-1 text-info"></i> My Trips
+        </a>
+        <a class="nav-link btn-host ms-lg-2" href="/listings/new">
+          <i class="fa-solid fa-house-chimney me-1"></i> Host with RoamHaven
+        </a>
+
+        <!-- Dark / Light Mode Toggle Button -->
+        <button 
+          id="themeToggleBtn" 
+          class="btn btn-outline-secondary rounded-circle ms-lg-2 theme-toggle-btn" 
+          type="button" 
+          onclick="toggleTheme()" 
+          title="Toggle Dark / Light Mode"
+          aria-label="Toggle Dark / Light Mode"
+        >
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
