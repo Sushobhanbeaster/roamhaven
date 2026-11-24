@@ -43,7 +43,7 @@ const validateBooking = (req, res, next) => {
   }
 };
 
-const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
+const MONGO_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/wanderlust";
 
 main()
   .then(() => {
@@ -716,6 +716,11 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server
-app.listen(8080, () => {
-  console.log("Server is listening on port 8080 - http://localhost:8080");
-});
+const PORT = process.env.PORT || 8080;
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Server is listening on port ${PORT} - http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
