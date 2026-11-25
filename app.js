@@ -49,15 +49,25 @@ const validateBooking = (req, res, next) => {
 
 const MONGO_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/wanderlust";
 
-// Cache the connection promise so serverless cold starts await it
-let dbConnected = false;
-const connectDB = async () => {
-  if (!dbConnected) {
-    await mongoose.connect(MONGO_URL);
-    dbConnected = true;
-    console.log("Connected to MongoDB successfully");
+// Serverless-safe MongoDB connection caching (persists across warm invocations)
+let cached = global._mongooseCache;
+if (!cached) {
+  cached = global._mongooseCache = { conn: null, promise: null };
+}
+
+async function connectDB() {
+  if (cached.conn) return cached.conn;
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGO_URL, {
+      serverSelectionTimeoutMS: 8000,
+    }).then((m) => {
+      console.log("Connected to MongoDB successfully");
+      return m;
+    });
   }
-};
+  cached.conn = await cached.promise;
+  return cached.conn;
+}
 
 // Middleware: wait for DB connection before handling any request
 app.use(async (req, res, next) => {
@@ -66,6 +76,7 @@ app.use(async (req, res, next) => {
     next();
   } catch (err) {
     console.log("MongoDB connection error:", err);
+    cached.promise = null; // reset so next request retries
     next(new ExpressError(500, "Database connection failed"));
   }
 });
