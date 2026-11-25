@@ -49,17 +49,26 @@ const validateBooking = (req, res, next) => {
 
 const MONGO_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/wanderlust";
 
-main()
-  .then(() => {
+// Cache the connection promise so serverless cold starts await it
+let dbConnected = false;
+const connectDB = async () => {
+  if (!dbConnected) {
+    await mongoose.connect(MONGO_URL);
+    dbConnected = true;
     console.log("Connected to MongoDB successfully");
-  })
-  .catch((err) => {
-    console.log("MongoDB connection error:", err);
-  });
+  }
+};
 
-async function main() {
-  await mongoose.connect(MONGO_URL);
-}
+// Middleware: wait for DB connection before handling any request
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.log("MongoDB connection error:", err);
+    next(new ExpressError(500, "Database connection failed"));
+  }
+});
 
 // App Configuration
 app.set("view engine", "ejs");
