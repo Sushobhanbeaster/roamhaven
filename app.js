@@ -75,9 +75,9 @@ app.use(async (req, res, next) => {
     await connectDB();
     next();
   } catch (err) {
-    console.log("MongoDB connection error:", err);
+    console.error("MongoDB connection error:", err);
     cached.promise = null; // reset so next request retries
-    next(new ExpressError(500, "Database connection failed"));
+    next(new ExpressError(500, `Database connection failed: ${err.message}`));
   }
 });
 
